@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRR Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>IRR Calculator</h2>
+
+    <label for="beginningBalance">Beginning Balance:</label>
+    <input type="text" id="beginningBalance" placeholder="Enter beginning balance" onblur="formatNumber(this)">
+
+    <label for="endingBalance">Ending Balance:</label>
+    <input type="text" id="endingBalance" placeholder="Enter ending balance" onblur="formatNumber(this)">
+
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate">
+
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate">
+
+    <button onclick="calculateIRR()">Calculate IRR</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    // Function to format numbers with commas
+    function formatNumber(input) {
+        // Remove any non-numeric characters except decimal points
+        let value = input.value.replace(/[^0-9.]/g, '');
+
+        // Format the number with commas
+        if (value) {
+            value = parseFloat(value).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Update the input field with the formatted value
+        input.value = value;
+    }
+
+    function calculateIRR() {
+        // Get user inputs
+        const beginningBalanceInput = document.getElementById('beginningBalance').value.replace(/,/g, '');
+        const endingBalanceInput = document.getElementById('endingBalance').value.replace(/,/g, '');
+
+        const beginningBalance = parseFloat(beginningBalanceInput);
+        const endingBalance = parseFloat(endingBalanceInput);
+        const startDate = new Date(document.getElementById('startDate').value);
+        const endDate = new Date(document.getElementById('endDate').value);
+
+        // Validate inputs
+        if (isNaN(beginningBalance) || isNaN(endingBalance) || startDate == 'Invalid Date' || endDate == 'Invalid Date') {
+            document.getElementById('result').innerText = "Please enter valid values.";
+            return;
+        }
+
+        if (beginningBalance <= 0 || endingBalance <= 0) {
+            document.getElementById('result').innerText = "Balances must be positive numbers.";
+            return;
+        }
+
+        if (endDate <= startDate) {
+            document.getElementById('result').innerText = "End date must be after start date.";
+            return;
+        }
+
+        // Calculate time difference in years
+        const timeDifferenceInMs = endDate - startDate;
+        const timeDifferenceInYears = timeDifferenceInMs / (1000 * 60 * 60 * 24 * 365);
+
+        // Calculate IRR using the formula:
+        // IRR = (Ending Balance / Beginning Balance)^(1/years) - 1
+        const irr = Math.pow(endingBalance / beginningBalance, 1 / timeDifferenceInYears) - 1;
+
+        // Display result as percentage
+        document.getElementById('result').innerText = `IRR: ${(irr * 100).toFixed(2)}%`;
+    }
+</script>
+
+</body>
+</html>
