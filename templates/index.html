@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Portfolio Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Portfolio</h1>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-danger">
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% if current_user.is_authenticated %}
+            <p>Welcome, {{ current_user.username }}! <a href="{{ url_for('logout') }}">Logout</a> | <a href="{{ url_for('past_trades') }}">View Past Trades</a></p>
+
+            <h2>Add a new stock</h2>
+            <form method="POST" action="/add_stock">
+                <label for="ticker">Ticker</label>
+                <input type="text" id="ticker" name="ticker" required>
+                <label for="shares">Shares</label>
+                <input type="number" id="shares" name="shares" required>
+                <button type="submit">Add Stock</button>
+            </form>
+
+            <h2>Your Stocks</h2>
+            <h3>Total Portfolio Value: ${{ "%.2f"|format(portfolio_value) }}</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Shares</th>
+                        <th>Live Price</th>
+                        <th>Total Value</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in stocks %}
+                        <tr>
+                            <td data-label="Ticker">{{ stock.ticker }}</td>
+                            <td data-label="Shares">{{ stock.shares }}</td>
+                            <td data-label="Live Price">${{ "%.2f"|format(stock.price) if stock.price != 'N/A' else 'N/A' }}</td>
+                            <td data-label="Total Value">${{ "%.2f"|format(stock.total_value) if stock.total_value != 'N/A' else 'N/A' }}</td>
+                            <td data-label="Sell">
+                                <form method="POST" action="/sell_stock" style="display:inline;">
+                                    <input type="hidden" name="ticker" value="{{ stock.ticker }}">
+                                    <input type="number" name="shares" min="1" max="{{ stock.shares }}" required>
+                                    <button type="submit">Sell</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <p><a href="{{ url_for('login') }}">Login</a> or <a href="{{ url_for('register') }}">Register</a> to get started.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

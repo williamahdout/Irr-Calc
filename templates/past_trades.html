@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Trades</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Past Trades</h1>
+        <p><a href="{{ url_for('index') }}">Back to Portfolio</a></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Ticker</th>
+                    <th>Shares</th>
+                    <th>Buy Price</th>
+                    <th>Sell Price</th>
+                    <th>Profit/Loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trade in trades %}
+                    <tr>
+                        <td data-label="Date">{{ trade.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td data-label="Ticker">{{ trade.ticker }}</td>
+                        <td data-label="Shares">{{ trade.shares }}</td>
+                        <td data-label="Buy Price">${{ "%.2f"|format(trade.buy_price) }}</td>
+                        <td data-label="Sell Price">${{ "%.2f"|format(trade.sell_price) }}</td>
+                        <td data-label="Profit/Loss" style="color: {% if trade.profit_loss >= 0 %}green{% else %}red{% endif %};">
+                            ${{ "%.2f"|format(trade.profit_loss) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
