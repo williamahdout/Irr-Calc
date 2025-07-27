@@ -7,7 +7,8 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a real secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
-app.config['ALPHA_VANTAGE_API_KEY'] = 'YOUR_API_KEY' # Replace with your Alpha Vantage API key
+# IMPORTANT: Replace 'YOUR_API_KEY' with your actual Alpha Vantage API key
+app.config['ALPHA_VANTAGE_API_KEY'] = 'YOUR_API_KEY'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
